@@ -5,54 +5,100 @@ import CartDrawer from './CartDrawer';
 import PaymentModal from './PaymentModal'; // Create this file as shown in previous step
 import OrderStatus from './OrderStatus';
 // --- MODULAR HEADER COMPONENT ---
-const Header = ({ i18n, onSelectRestaurant, onBackHome, cartCount, onOpenCart }: any) => {
+
+interface HeaderProps {
+  i18n: any;
+  onSelectRestaurant: (name: string) => void;
+  onBackHome: () => void;
+  cartCount: number;
+  onOpenCart: () => void;
+}
+
+const Header = ({ i18n, onSelectRestaurant, onBackHome, cartCount, onOpenCart }: HeaderProps) => {
+  const { t } = useTranslation();
   const [activePopup, setActivePopup] = useState<string | null>(null);
   const [resSearch, setResSearch] = useState("");
-  const currentLang = i18n?.language || 'en';
-  const isAmharic = currentLang === 'am';
 
-  const togglePopup = (name: string) => setActivePopup(activePopup === name ? null : name);
+  const isAmharic = i18n.language === 'am';
+
+  // Toggle Language Function
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'am' ? 'en' : 'am';
+    i18n.changeLanguage(newLang);
+  };
 
   const restaurants = [
     { name: 'Abyssinia Burger', type: 'Fast Food' },
     { name: 'Habesha Pizza', type: 'Italian' },
     { name: 'Lucy Kitchen', type: 'Cultural' },
-    { name: 'Sky Coffee', type: 'Cafe' }
+    { name: 'Sky Coffee', type: 'Cafe' },
+    { name: 'Yod Abyssinia', type: 'Traditional' }
   ];
 
-  const filteredRes = restaurants.filter(r => r.name.toLowerCase().includes(resSearch.toLowerCase()));
+  const filteredRes = restaurants.filter(r => 
+    r.name.toLowerCase().includes(resSearch.toLowerCase())
+  );
 
   return (
     <header className="bg-white/80 backdrop-blur-xl sticky top-0 z-[100] px-4 py-3 flex items-center justify-between border-b border-gray-100">
+      
+      {/* LEFT: Menu & Logo */}
       <div className="flex items-center gap-3">
-        <button className="p-2 hover:bg-gray-100 rounded-xl">
+        <button onClick={() => setActivePopup('settings')} className="p-2 hover:bg-gray-100 rounded-xl transition-all">
           <div className="flex flex-col gap-1 w-5">
             <span className="h-0.5 w-full bg-gray-900 rounded-full"></span>
             <span className="h-0.5 w-3/4 bg-gray-900 rounded-full"></span>
+            <span className="h-0.5 w-full bg-gray-900 rounded-full"></span>
           </div>
         </button>
-        <div className="flex items-center gap-2 cursor-pointer" onClick={onBackHome}>
+        <div className="flex items-center gap-2 cursor-pointer shrink-0" onClick={onBackHome}>
           <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center text-white font-black shadow-lg">F</div>
-          <span className="text-lg font-black tracking-tighter hidden sm:block">FoodExpress</span>
+          <span className="text-lg font-black tracking-tighter hidden sm:block italic text-gray-900">FoodExpress</span>
         </div>
       </div>
 
+      {/* CENTER/RIGHT: Language & Actions */}
       <div className="flex items-center gap-2">
+        
+        {/* Language Toggle Button */}
+        <button 
+          onClick={toggleLanguage} 
+          className="px-3 py-2 bg-orange-50 text-orange-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all border border-orange-100"
+        >
+          {isAmharic ? 'English' : 'አማርኛ'}
+        </button>
+
+        {/* Restaurants Dropdown */}
         <div className="relative">
-          <button onClick={() => togglePopup('restaurants')} className="px-4 py-2 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all shadow-md">
+          <button 
+            onClick={() => setActivePopup(activePopup === 'restaurants' ? null : 'restaurants')} 
+            className="px-4 py-2 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-md"
+          >
             {isAmharic ? 'ምግብ ቤቶች' : 'Restaurants'}
           </button>
+
           {activePopup === 'restaurants' && (
-            <div className="fixed inset-x-4 top-16 md:absolute md:inset-auto md:right-0 md:top-12 w-auto md:w-72 bg-white rounded-3xl shadow-2xl border border-gray-100 p-4 animate-in slide-in-from-top-2">
+            <div className="fixed inset-x-4 top-16 md:absolute md:inset-auto md:right-0 md:top-12 w-auto md:w-72 bg-white rounded-3xl shadow-2xl border border-gray-100 p-4 animate-in zoom-in-95 duration-200">
               <input 
-                autoFocus type="text" placeholder="Search..." value={resSearch}
-                className="w-full p-3 bg-gray-50 rounded-2xl mb-4 text-sm outline-none border focus:border-orange-500"
+                autoFocus 
+                type="text" 
+                placeholder={isAmharic ? "ፈልግ..." : "Search..."}
+                value={resSearch}
+                className="w-full p-3 bg-gray-50 rounded-2xl mb-4 text-sm outline-none border focus:border-orange-500 transition-all"
                 onChange={(e) => setResSearch(e.target.value)}
               />
-              <div className="space-y-1">
+              <div className="space-y-1 max-h-64 overflow-y-auto pr-1">
                 {filteredRes.map((res) => (
-                  <button key={res.name} onClick={() => { onSelectRestaurant(res.name); setActivePopup(null); }} className="w-full text-left p-3 hover:bg-orange-50 rounded-2xl">
-                    <p className="text-sm font-black">{res.name}</p>
+                  <button 
+                    key={res.name} 
+                    onClick={() => { onSelectRestaurant(res.name); setActivePopup(null); }} 
+                    className="w-full text-left p-3 hover:bg-orange-50 rounded-2xl flex items-center justify-between group transition-colors"
+                  >
+                    <div>
+                      <p className="text-sm font-black group-hover:text-orange-500">{res.name}</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase">{res.type}</p>
+                    </div>
+                    <span className="text-gray-300 group-hover:text-orange-500">→</span>
                   </button>
                 ))}
               </div>
@@ -60,18 +106,26 @@ const Header = ({ i18n, onSelectRestaurant, onBackHome, cartCount, onOpenCart }:
           )}
         </div>
 
-        <button onClick={onOpenCart} className="relative w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center text-lg hover:bg-gray-50 transition-all">
-          🛒
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-bounce">
-              {cartCount}
-            </span>
-          )}
-        </button>
+        {/* Cart Button */}
+        <div className="relative">
+          <button 
+            onClick={onOpenCart}
+            className="w-10 h-10 rounded-xl border border-gray-100 flex items-center justify-center text-xl hover:bg-gray-50 transition-all shadow-sm"
+          >
+            🛒
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[9px] font-black w-5 h-5 rounded-full border-2 border-white flex items-center justify-center animate-bounce">
+                {cartCount}
+              </span>
+            )}
+          </button>
+        </div>
+
       </div>
     </header>
   );
 };
+
 
 // --- MODULAR HERO SECTION ---
 const Hero = ({ onSearch, searchQuery, setSearchQuery }: any) => (
@@ -203,11 +257,7 @@ export default function App() {
         }}
       />
 
-      <PaymentModal 
-        isOpen={isPaymentOpen}
-        onClose={() => setIsPaymentOpen(false)}
-        totalAmount={cartCount * 450}
-      />
+      
 
       {showToast && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[200] animate-in slide-in-from-top-4">

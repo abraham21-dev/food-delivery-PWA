@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-const MenuPage = ({ i18n, restaurantName, onBack, onAddItem }: any) => {
+const MenuPage = ({ restaurantName, onBack, onAddItem }: any) => {
   const [activeTab, setActiveTab] = useState('All');
   const categories = ['All', 'Burgers', 'Pizza', 'Sides', 'Drinks'];
-
   return (
     <div className="min-h-screen bg-white pb-32 animate-in fade-in duration-500">
       
