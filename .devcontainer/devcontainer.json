@@ -1,0 +1,26 @@
+{
+    "name": "Abraham-ML-Web-Workstation",
+    "build": { "dockerfile": "Containerfile" },
+    "runArgs": [
+        "--userns=keep-id",
+        "--security-opt", "label=disable",
+        "--device", "nvidia.com/gpu=all"
+    ],
+    "containerEnv": {
+        "NVIDIA_VISIBLE_DEVICES": "all",
+        "NVIDIA_DRIVER_CAPABILITIES": "compute,utility"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-toolsai.jupyter",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ritwickdey.LiveServer"
+            ]
+        }
+    },
+    "remoteUser": "root"
+}

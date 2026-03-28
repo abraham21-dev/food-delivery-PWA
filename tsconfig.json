@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx", // <--- FIX HERE
+    "noUnusedLocals": false, // <--- FIX HERE
+    "strict": true,
+    "types": ["node", "vite/client", "vite-plugin-pwa/client"]
+  },
+  "include": ["src"]
+}
